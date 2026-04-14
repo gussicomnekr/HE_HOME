@@ -1,40 +1,34 @@
 (function(){
-  // ── 로고 이미지 삽입 (base64) ──
-  const LOGO = 'assets/images/he_logo.png';
-  ['navLogoImg','statPanelImg','footerLogoImg'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.src = LOGO;
+  var LOGO='assets/images/he_logo.png';
+  ['navLogoImg','statPanelImg','footerLogoImg'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.src=LOGO;
   });
-
-  // ── 네비게이션 스크롤 효과 ──
-  const nav = document.getElementById('mainNav');
-  const floatCta = document.getElementById('floatCta');
-  const heroEl = document.querySelector('.hero');
-
+  var nav=document.getElementById('mainNav');
+  var flt=document.getElementById('floatCta');
+  var hero=document.querySelector('.hero');
   function onScroll(){
-    const y = window.scrollY;
-    nav.classList.toggle('scrolled', y > 20);
-    // 히어로 섹션 지나면 플로팅 버튼 표시
-    const heroBottom = heroEl ? heroEl.offsetTop + heroEl.offsetHeight * 0.5 : 400;
-    floatCta.classList.toggle('show', y > heroBottom);
+    var y=window.scrollY;
+    if(nav) nav.classList.toggle('scrolled',y>20);
+    if(flt&&hero) flt.classList.toggle('show',y>hero.offsetTop+hero.offsetHeight*0.5);
   }
-  window.addEventListener('scroll', onScroll, {passive:true});
-
-  // ── 모바일 메뉴 토글 ──
-  window.toggleNav = function(){
-    document.getElementById('mobileNav').classList.toggle('open');
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.toggleNav=function(){
+    var m=document.getElementById('mobileNav'); if(m) m.classList.toggle('open');
   };
-
-  // ── 스크롤 리빌 (IntersectionObserver) ──
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        const d = +(e.target.dataset.d||0);
-        setTimeout(()=>e.target.classList.add('vis'), d);
-        io.unobserve(e.target);
-      }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          setTimeout(function(){e.target.classList.add('vis');},(+e.target.dataset.d||0));
+          io.unobserve(e.target);
+        }
+      });
+    },{threshold:0.05,rootMargin:'0px 0px -10px 0px'});
+    ['tl-item','cred-badge','svc-card','why-pt','reveal'].forEach(function(cls,ci){
+      var delays=[110,90,80,90,0];
+      document.querySelectorAll('.'+cls).forEach(function(el,i){
+        el.dataset.d=i*delays[ci]; io.observe(el);
+      });
     });
-  },{threshold:0.05, rootMargin:'0px 0px -10px 0px'});
-
-  document.querySelectorAll('.tl-item').forEach((el,i)=>{ el.dataset.d=i*110; io.observe(el); });
-  document.querySelectorAll
+  }
+})();
